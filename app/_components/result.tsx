@@ -1,9 +1,9 @@
 import Image from 'next/image';
 
 interface IResult {
-    title: string;
-    url: string;
-    description: string;
+  title: string;
+  url: string;
+  content: string;
 }
 
 const getFavIcon = (url: string) => {
@@ -12,9 +12,9 @@ const getFavIcon = (url: string) => {
     return `https://${domain}/favicon.ico`
 }
 
-const Result = ({ url, title, description }: IResult) => (
+const Result = ({ content, title, url }: IResult) => (
   <div className="pb-6">
-    <p className="text-base mb-1">{description}</p>
+    <p className="text-base mb-1">{content}</p>
 
     <a href={url} target="_blank" rel="noopener noreferrer">
       <div className="flex items-center">

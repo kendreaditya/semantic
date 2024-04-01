@@ -3,33 +3,37 @@
 import { use, useEffect, useState } from "react";
 import { useCombobox } from "downshift";
 
-const SearchBar = () => {
-  const [inputValue, setInputValue] = useState("");
+const SearchBar = ({onSearch}) => {
+  const [query, setQuery] = useState("");
   const [items, setItems] = useState([]);
 
-useEffect(() => {
-  if (!inputValue) {
-    return setItems([]);
-  }
+  const handleSearch = () => {
+    onSearch(query);
+  };
 
-  fetch(
-    `https://justcors.com/tl_1a164e0/https://suggestqueries.google.com/complete/search?json&client=firefox&hl=en&lr=en&ds=n&q=${inputValue}`,
-  )
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      // Ensure data[1] exists before accessing
-      const suggestions = data[1] || [];
-      setItems(suggestions);
-    })
-    .catch((error) => {
-      console.error("Error fetching suggestions:", error);
-    });
-}, [inputValue]);
+  useEffect(() => {
+    if (!query) {
+      return setItems([]);
+    }
+
+    fetch(
+      `https://justcors.com/tl_e9841d3/https://suggestqueries.google.com/complete/search?json&client=firefox&hl=en&lr=en&ds=n&q=${query}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Ensure data[1] exists before accessing
+        const suggestions = data[1] || [];
+        setItems(suggestions);
+      })
+      .catch((error) => {
+        console.error("Error fetching suggestions:", error);
+      });
+  }, [query]);
 
   const {
     isOpen,
@@ -40,7 +44,7 @@ useEffect(() => {
   } = useCombobox({
     items,
     onInputValueChange: ({ inputValue }) => {
-      setInputValue(inputValue);
+      setQuery(inputValue);
     },
   });
 
@@ -62,10 +66,13 @@ useEffect(() => {
           autoComplete="off"
           autoFocus={true}
           required
+          onSubmit={handleSearch}
         />
         <button
-          type="submit"
+          type="button"
           className="text-white absolute end-2.5 bottom-2.5 bg-indigo-500 hover:bg-indigo-500/90 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 "
+          onSubmit={handleSearch}
+          onClick={handleSearch}
         >
           Search
         </button>
