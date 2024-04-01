@@ -3,6 +3,33 @@
 import { use, useEffect, useState } from "react";
 import { useCombobox } from "downshift";
 
+const Groq = require("groq-sdk");
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
+
+async function get_autocomplete(query: string) {
+  return await groq.chat.completions
+    .create({
+      messages: [
+        {
+          role: "system",
+          content:
+            "Generate a JSON object with 10 predicted search queries. The JSON object should consist solely of a list of these queries and the key should be search_queries.",
+        },
+        {
+          role: "user",
+          content: `The query is "${query}"`,
+        },
+      ],
+      model: "gemma-7b-it",
+    })
+    .then((chatCompletion: any) => {
+      return chatCompletion.choices[0]?.message?.content || "";
+    });
+}
+
+
 const SearchBar = ({onSearch}) => {
   const [query, setQuery] = useState("");
   const [items, setItems] = useState([]);
@@ -16,23 +43,16 @@ const SearchBar = ({onSearch}) => {
       return setItems([]);
     }
 
-    fetch(
-      `https://justcors.com/tl_e9841d3/https://suggestqueries.google.com/complete/search?json&client=firefox&hl=en&lr=en&ds=n&q=${query}`
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // Ensure data[1] exists before accessing
-        const suggestions = data[1] || [];
-        setItems(suggestions);
-      })
-      .catch((error) => {
-        console.error("Error fetching suggestions:", error);
-      });
+    get_autocomplete(query).then((raw_response) => {
+      // pares the response for the first { and last }
+      const json = raw_response.match(/\{.*\}/s);
+      const data = JSON.parse(json);
+      let suggestions = data.search_queries || [];
+      // first 10 only
+      suggestions = suggestions.slice(0, 10);
+
+      setItems(suggestions);
+    });
   }, [query]);
 
   const {
@@ -50,7 +70,7 @@ const SearchBar = ({onSearch}) => {
 
   return (
     <form className="max-w-xl mx-auto relative p-4">
-      <h1 className="hover:animate-pulse text-5xl font-bold mb-3 lg:absolute lg:-left-56 lg:top-5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-50 text-transparent bg-clip-text text-center">
+      <h1 className="hover:animate-pulse text-4xl font-bold mb-3 lg:absolute lg:-left-44 lg:top-5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-50 text-transparent bg-clip-text text-center">
         semantic
       </h1>
       <label htmlFor="default-search" className="sr-only">

@@ -28,7 +28,7 @@ export default function Home() {
 
   return (
     <main>
-      <div className="w-full pt-32 pb-12 bg-gradient-to-b from-indigo-500/20 via-purple-500/13 to-0">
+      <div className="w-full pt-12 pb-12 bg-gradient-to-b from-indigo-500/20 via-purple-500/13 to-0">
         <SearchBar onSearch={handleSearch} />
       </div>
 
