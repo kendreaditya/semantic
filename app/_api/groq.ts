@@ -11,7 +11,7 @@ async function get_autocomplete(query: string) {
         {
           role: "system",
           content:
-            "Generate a JSON object with 10 predicted search queries. The JSON object should consist solely of a list of these queries and the key should be search_queries. Be sure there are no duplicates.",
+            "Generate a diverse JSON object with 10 predicted search queries. The JSON object should consist solely of a list of these queries, with the key named 'search_queries'. Ensure there are no duplicates, and include a mix of tangentially related and specific topics to provide a varied selection.",
         },
         {
           role: "user",

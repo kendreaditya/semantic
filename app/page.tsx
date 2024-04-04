@@ -2,10 +2,14 @@ import SearchBar from "./_components/searchbar";
 
 export default function Home() {
   return (
-    <main className="">
-      <div className="mt-40">
+    <main>
+      {/* Add 15% margin to the logo and search bar */}
+      <div
+        style={{ paddingTop: "10%" }}
+        className="p-3 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 to-black"
+      >
         <svg
-          className="mx-auto my-6 sm:w-1/5 drop-shadow-glow"
+          className="mx-auto my-6 drop-shadow-glow max-w-xs"
           id="logo"
           viewBox="0 0 582 111"
           fill="none"
